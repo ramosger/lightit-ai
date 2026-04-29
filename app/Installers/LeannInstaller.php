@@ -3,26 +3,48 @@
 namespace App\Installers;
 
 use App\Installers\Contracts\InstallerInterface;
+use App\Support\BrewRunner;
 use App\Support\StateManager;
 
 class LeannInstaller implements InstallerInterface
 {
+    private ?string $lastError = null;
+
     public function __construct(
+        private readonly BrewRunner $brew,
         private readonly StateManager $state,
     ) {}
 
+    public function getLastError(): ?string
+    {
+        return $this->lastError;
+    }
+
     public function install(): bool
     {
-        $output = [];
-        $exit = 0;
-        exec('pip3 install leann-py 2>&1', $output, $exit);
-
-        if ($exit !== 0) {
-            // Try pip as fallback
-            exec('pip install leann-py 2>&1', $output, $exit);
+        if (! $this->ensureUv()) {
+            return false;
         }
 
+        foreach (['libomp', 'boost', 'protobuf', 'zeromq', 'pkgconf'] as $pkg) {
+            $this->brew->install($pkg);
+        }
+
+        $venv = $this->venvPath();
+
+        $output = [];
+        $exit = 0;
+        exec("uv venv {$venv} 2>&1", $output, $exit);
         if ($exit !== 0) {
+            $this->lastError = implode("\n", $output);
+
+            return false;
+        }
+
+        exec("uv pip install leann --python {$venv}/bin/python 2>&1", $output, $exit);
+        if ($exit !== 0) {
+            $this->lastError = implode("\n", $output);
+
             return false;
         }
 
@@ -33,13 +55,10 @@ class LeannInstaller implements InstallerInterface
 
     public function uninstall(): bool
     {
+        $venv = $this->venvPath();
         $output = [];
         $exit = 0;
-        exec('pip3 uninstall leann-py -y 2>&1', $output, $exit);
-
-        if ($exit !== 0) {
-            exec('pip uninstall leann-py -y 2>&1', $output, $exit);
-        }
+        exec("rm -rf {$venv} 2>&1", $output, $exit);
 
         if ($exit !== 0) {
             return false;
@@ -54,8 +73,9 @@ class LeannInstaller implements InstallerInterface
     {
         $current = $this->resolveVersion();
 
+        $venv = $this->venvPath();
         $output = [];
-        exec('pip3 index versions leann-py 2>/dev/null', $output);
+        exec("uv pip index versions leann --python {$venv}/bin/python 2>/dev/null", $output);
         $latest = null;
         foreach ($output as $line) {
             if (preg_match('/Available versions:\s*([\d.]+)/', $line, $m)) {
@@ -73,17 +93,57 @@ class LeannInstaller implements InstallerInterface
 
     public function isInstalled(): bool
     {
+        $venv = $this->venvPath();
+        if (! is_dir($venv)) {
+            return false;
+        }
+
         $output = [];
-        exec('python3 -c "import leann" 2>/dev/null', $output, $exit);
+        exec("uv pip show leann --python {$venv}/bin/python 2>/dev/null", $output, $exit);
 
         return $exit === 0;
     }
 
-    private function resolveVersion(): string
+    private function venvPath(): string
+    {
+        $home = $_SERVER['HOME'] ?? posix_getpwuid(posix_getuid())['dir'];
+
+        return $home.'/.lightit-ai/leann-venv';
+    }
+
+    private function ensureUv(): bool
     {
         $output = [];
-        exec('python3 -c "import leann; print(leann.__version__)" 2>/dev/null', $output);
+        exec('which uv 2>/dev/null', $output);
 
-        return trim(implode('', $output)) ?: 'unknown';
+        if (! empty($output)) {
+            return true;
+        }
+
+        $installOutput = [];
+        $exit = 0;
+        exec('curl -LsSf https://astral.sh/uv/install.sh | sh 2>&1', $installOutput, $exit);
+
+        if ($exit !== 0) {
+            $this->lastError = implode("\n", $installOutput);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function resolveVersion(): string
+    {
+        $venv = $this->venvPath();
+        $output = [];
+        exec("uv pip show leann --python {$venv}/bin/python 2>/dev/null", $output);
+        foreach ($output as $line) {
+            if (preg_match('/^Version:\s*(.+)/', $line, $m)) {
+                return trim($m[1]);
+            }
+        }
+
+        return 'unknown';
     }
 }

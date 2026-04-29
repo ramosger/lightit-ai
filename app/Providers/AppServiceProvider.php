@@ -18,9 +18,11 @@ use App\Support\StateManager;
 use App\Prompts\BackableMultiSelectPrompt;
 use App\Prompts\BackableSelectPrompt;
 use App\Prompts\QuitableSelectPrompt;
+use App\Themes\ConfirmPromptRenderer;
 use App\Themes\MultiSelectPromptRenderer;
 use App\Themes\SelectPromptRenderer;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SelectPrompt;
@@ -45,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
                 'engram' => new EngramInstaller($brew, $state),
                 'pao' => new PaoInstaller($state),
                 'rtk' => new RtkInstaller($brew, $state),
-                'leann' => new LeannInstaller($state),
+                'leann' => new LeannInstaller($brew, $state),
             ];
         });
 
@@ -91,10 +93,14 @@ class AppServiceProvider extends ServiceProvider
             BackableMultiSelectPrompt::class => MultiSelectPromptRenderer::class,
             QuitableSelectPrompt::class => SelectPromptRenderer::class,
             BackableSelectPrompt::class => SelectPromptRenderer::class,
+            ConfirmPrompt::class => ConfirmPromptRenderer::class,
         ]);
 
         Prompt::theme('lightit');
 
-        Prompt::cancelUsing(fn () => null);
+        Prompt::cancelUsing(function () {
+            passthru('clear');
+            exit(0);
+        });
     }
 }

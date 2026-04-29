@@ -14,4 +14,6 @@ interface InstallerInterface
     public function checkUpdate(): array;
 
     public function isInstalled(): bool;
+
+    public function getLastError(): ?string;
 }

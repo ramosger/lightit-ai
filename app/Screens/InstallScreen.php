@@ -10,6 +10,7 @@ use App\Theme;
 use LaravelZero\Framework\Commands\Command;
 
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\pause;
 use function Laravel\Prompts\spin;
 
 class InstallScreen
@@ -26,14 +27,35 @@ class InstallScreen
         $c = Theme::PRIMARY;
         $toolConfig = config('tools');
         $choices = [];
+        $alreadyInstalled = [];
 
         foreach ($this->installers as $key => $installer) {
-            $label = $toolConfig[$key]['name'].' — '.$toolConfig[$key]['description'];
-            $choices[$key] = $label;
+            $name = $toolConfig[$key]['name'];
+            if ($installer->isInstalled() || $this->state->isInstalled($key)) {
+                $alreadyInstalled[$key] = $name;
+            } else {
+                $choices[$key] = $name.' — '.$toolConfig[$key]['description'];
+            }
+        }
+
+        if ($alreadyInstalled) {
+            $command->line("  <fg=$c;options=bold>Already installed</>");
+            foreach ($alreadyInstalled as $name) {
+                $command->line("  <fg=green>✓</> <fg=$c>{$name}</>");
+            }
+            $command->newLine();
+        }
+
+        if (empty($choices)) {
+            $command->line("  <fg=$c;options=bold>All tools are already installed</>");
+            $command->newLine();
+            pause();
+
+            return;
         }
 
         $prompt = new BackableMultiSelectPrompt(
-            label: 'Which tools would you like to install?',
+            label: 'Which Stack tools would you like to install?',
             options: $choices,
             default: array_keys($choices),
             hint: Theme::NAV_HINT_MULTI,
@@ -45,24 +67,21 @@ class InstallScreen
             return;
         }
 
-        $configClaude = confirm(
+        $engramInstaller = $this->installers['engram'] ?? null;
+        $engramAlreadyInstalled = $engramInstaller
+            && ($engramInstaller->isInstalled() || $this->state->isInstalled('engram'));
+
+        $configClaude = ! $engramAlreadyInstalled && confirm(
             label: 'Configure Claude Code with Engram MCP? (non-destructive — merges with your existing config)',
             default: true,
         );
 
         $command->newLine();
-        $results = [];
+        $anyFailed = false;
 
         foreach ($selected as $key) {
             $installer = $this->installers[$key];
             $name = $toolConfig[$key]['name'];
-
-            if ($installer->isInstalled() && $this->state->isInstalled($key)) {
-                $command->line("  <fg=$c>✓ {$name} already installed, skipping.</>");
-                $results[$key] = 'skipped';
-
-                continue;
-            }
 
             $success = spin(
                 callback: fn () => $installer->install(),
@@ -71,10 +90,21 @@ class InstallScreen
 
             if ($success) {
                 $command->line("  <fg=green>✓ {$name} installed successfully.</>");
-                $results[$key] = 'installed';
             } else {
+                $anyFailed = true;
                 $command->line("  <fg=red>✗ {$name} installation failed.</>");
-                $results[$key] = 'failed';
+                $error = $installer->getLastError();
+                if ($error) {
+                    $clean = preg_replace('/\x1b\[[0-9;]*[A-Za-z]/', '', $error);
+                    foreach (explode("\n", trim($clean)) as $errorLine) {
+                        $errorLine = trim($errorLine);
+                        if ($errorLine === '') {
+                            continue;
+                        }
+                        $safe = htmlspecialchars($errorLine, ENT_XML1);
+                        $command->line("    <fg=red>{$safe}</>");
+                    }
+                }
             }
         }
 
@@ -103,7 +133,10 @@ class InstallScreen
         }
 
         $command->newLine();
-        $command->line("  <fg=$c;options=bold>Installation complete!</>");
-        $command->line("  <fg=$c>Restart Claude Code to activate Engram MCP.</>");
+        if (! $anyFailed) {
+            $command->line("  <fg=$c;options=bold>Installation complete!</>");
+        }
+        $command->newLine();
+        pause();
     }
 }

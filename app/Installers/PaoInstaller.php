@@ -7,9 +7,16 @@ use App\Support\StateManager;
 
 class PaoInstaller implements InstallerInterface
 {
+    private ?string $lastError = null;
+
     public function __construct(
         private readonly StateManager $state,
     ) {}
+
+    public function getLastError(): ?string
+    {
+        return $this->lastError;
+    }
 
     public function install(): bool
     {
@@ -18,6 +25,8 @@ class PaoInstaller implements InstallerInterface
         exec('composer global require nunomaduro/pao 2>&1', $output, $exit);
 
         if ($exit !== 0) {
+            $this->lastError = implode("\n", $output);
+
             return false;
         }
 

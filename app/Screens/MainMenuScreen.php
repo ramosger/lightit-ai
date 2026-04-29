@@ -24,7 +24,7 @@ class MainMenuScreen
             $prompt = new QuitableSelectPrompt(
                 label: 'Menu',
                 options: [
-                    'install' => 'Install tools',
+                    'install' => 'Install Stack',
                     'uninstall' => 'Uninstall tools',
                     'update' => 'Check for updates',
                     'engram' => 'Engram memory',

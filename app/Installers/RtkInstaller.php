@@ -8,25 +8,34 @@ use App\Support\StateManager;
 
 class RtkInstaller implements InstallerInterface
 {
+    private ?string $lastError = null;
+
     public function __construct(
         private readonly BrewRunner $brew,
         private readonly StateManager $state,
     ) {}
 
+    public function getLastError(): ?string
+    {
+        return $this->lastError;
+    }
+
     public function install(): bool
     {
-        $success = $this->brew->install('rtk');
+        $brewResult = $this->brew->exec('brew install rtk');
+        $success = $brewResult['exit'] === 0;
 
         if (! $success) {
-            // Fallback: run official install script
             $output = [];
             $exit = 0;
             exec('curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh 2>&1', $output, $exit);
             $success = $exit === 0;
-        }
 
-        if (! $success) {
-            return false;
+            if (! $success) {
+                $this->lastError = implode("\n", $output) ?: $brewResult['output'];
+
+                return false;
+            }
         }
 
         $version = $this->resolveVersion();
@@ -43,7 +52,6 @@ class RtkInstaller implements InstallerInterface
                 return false;
             }
         } else {
-            // Installed via script — remove binary from known locations
             foreach (['/usr/local/bin/rtk', '/opt/homebrew/bin/rtk', $this->homeDir().'/.local/bin/rtk'] as $bin) {
                 if (file_exists($bin)) {
                     unlink($bin);
@@ -82,7 +90,6 @@ class RtkInstaller implements InstallerInterface
         exec('rtk --version 2>/dev/null', $output);
         $raw = trim(implode('', $output));
 
-        // "rtk X.Y.Z" → "X.Y.Z"
         return preg_replace('/^rtk\s+/i', '', $raw) ?: 'unknown';
     }
 
