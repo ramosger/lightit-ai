@@ -41,7 +41,9 @@
         }
     },
     "scripts": {
-        "build": "php application app:build lightit-ai"
+        "build": "php application app:build lightit-ai",
+        "test": "pest",
+        "lint": "pint"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,

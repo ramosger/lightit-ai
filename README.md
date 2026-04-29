@@ -1,41 +1,84 @@
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable-next-line MD041 -->
+
+<h1 align="center">
+<a href="https://lightit.io" target="_blank"><img src="https://lightit.io/images/Logo_purple.svg" width="400" alt="Light-it logo" /></a>
+</h1>
+
 <p align="center">
-    <img title="Laravel Zero" height="100" src="https://raw.githubusercontent.com/laravel-zero/docs/master/images/logo/laravel-zero-readme.png" alt="Laravel Zero Logo" />
+<strong>The official Light-it AI Stack Installer</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/laravel-zero/framework/actions"><img src="https://github.com/laravel-zero/laravel-zero/actions/workflows/tests.yml/badge.svg" alt="Build Status" /></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/dt/laravel-zero/framework.svg" alt="Total Downloads" /></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/v/laravel-zero/framework.svg?label=stable" alt="Latest Stable Version" /></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/l/laravel-zero/framework.svg" alt="License" /></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+<img src="https://img.shields.io/badge/PHP-8.4+-777BB4?logo=php&logoColor=white" alt="PHP 8.4+">
+<img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey" alt="Platform">
 </p>
 
-Laravel Zero was created by [Nuno Maduro](https://github.com/nunomaduro) and [Owen Voke](https://github.com/owenvoke), and is a micro-framework that provides an elegant starting point for your console application. It is an **unofficial** and customized version of Laravel optimized for building command-line applications.
+<!-- markdownlint-enable MD033 -->
 
-- Built on top of the [Laravel](https://laravel.com) components.
-- Optional installation of Laravel [Eloquent](https://laravel-zero.com/docs/database/), Laravel [Logging](https://laravel-zero.com/docs/logging/) and many others.
-- Supports interactive [menus](https://laravel-zero.com/docs/build-interactive-menus/) and [desktop notifications](https://laravel-zero.com/docs/send-desktop-notifications/) on Linux, Windows & MacOS.
-- Ships with a [Scheduler](https://laravel-zero.com/docs/task-scheduling/) and  a [Standalone Compiler](https://laravel-zero.com/docs/build-a-standalone-application/).
-- Integration with [Collision](https://github.com/nunomaduro/collision) - Beautiful error reporting
-- Follow the creator Nuno Maduro:
-    - YouTube: **[youtube.com/@nunomaduro](https://www.youtube.com/@nunomaduro)** — Videos every weekday
-    - Twitch: **[twitch.tv/enunomaduro](https://www.twitch.tv/enunomaduro)** — Streams (almost) every weekday
-    - Twitter / X: **[x.com/enunomaduro](https://x.com/enunomaduro)**
-    - LinkedIn: **[linkedin.com/in/nunomaduro](https://www.linkedin.com/in/nunomaduro)**
-    - Instagram: **[instagram.com/enunomaduro](https://www.instagram.com/enunomaduro)**
-    - Tiktok: **[tiktok.com/@enunomaduro](https://www.tiktok.com/@enunomaduro)**
+---
 
-------
+## What It Does
 
-## Documentation
+`lightit-ai` is a TUI installer that bootstraps the Light-it AI development stack into your environment. It installs and manages four tools that together give Claude Code persistent memory, token efficiency, type safety, and vector search capabilities.
 
-For full documentation, visit [laravel-zero.com](https://laravel-zero.com/).
+| Tool | What it does | Install method |
+|------|-------------|----------------|
+| **Engram** | Persistent memory across AI sessions | Homebrew (`gentleman-programming/tap`) |
+| **RTK** | Token-optimized CLI proxy (60–90% token savings) | Homebrew or install script |
+| **Pao** | PHP type safety enforcement tool | Composer global |
+| **Leann** | Local vector search / semantic memory | pip (`leann-py`) |
 
-## Support the development
-**Do you like this project? Support it by donating**
+---
 
-- PayPal: [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L)
-- Patreon: [Donate](https://www.patreon.com/nunomaduro)
+## Quick Start
 
-## License
+```bash
+lightit-ai
+```
 
-Laravel Zero is an open-source software licensed under the MIT license.
+The TUI guides you through installing, updating, or removing any combination of tools.
+
+---
+
+## Installation
+
+Requirements: PHP >= 8.4 & Composer
+
+```bash
+# Clone and install dependencies
+git clone https://github.com/lightit-io/lightit-ai
+cd lightit-ai
+composer install
+
+# Run directly
+php application
+
+# Or build a standalone binary
+composer build          # outputs builds/lightit-ai
+```
+
+---
+
+## TUI Screens
+
+- **Install** — select and install any tools not yet present
+- **Uninstall** — remove installed tools cleanly
+- **Update** — check for and apply updates to installed tools
+- **Engram** — manage Engram memory directly from the TUI
+
+---
+
+## Development
+
+```bash
+# Run tests
+composer test
+
+# Lint
+composer lint
+
+# Build standalone binary
+composer build
+```
