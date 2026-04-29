@@ -4,17 +4,17 @@ use App\Support\StateManager;
 
 beforeEach(function () {
     // Point state to a temp file so tests don't pollute ~/.lightit-ai
-    $this->tmpDir  = sys_get_temp_dir() . '/lightit-ai-test-' . uniqid();
+    $this->tmpDir = sys_get_temp_dir().'/lightit-ai-test-'.uniqid();
     mkdir($this->tmpDir, 0755, true);
     $_SERVER['HOME'] = realpath($this->tmpDir) ?: $this->tmpDir;
 
-    $this->manager = new StateManager();
+    $this->manager = new StateManager;
 });
 
 afterEach(function () {
-    $real    = realpath($this->tmpDir) ?: $this->tmpDir;
-    $stateDir = $real . '/.lightit-ai';
-    $file    = $stateDir . '/state.json';
+    $real = realpath($this->tmpDir) ?: $this->tmpDir;
+    $stateDir = $real.'/.lightit-ai';
+    $file = $stateDir.'/state.json';
 
     if (file_exists($file)) {
         unlink($file);
@@ -38,7 +38,7 @@ it('marks a tool as installed and persists it', function () {
         ->and($this->manager->getInstalledVersion('engram'))->toBe('1.2.0');
 
     // Re-load from disk
-    $fresh = new StateManager();
+    $fresh = new StateManager;
     expect($fresh->isInstalled('engram'))->toBeTrue();
 });
 

@@ -7,30 +7,35 @@ class BrewRunner
     public function tap(string $tap): bool
     {
         $result = $this->exec("brew tap {$tap}");
+
         return $result['exit'] === 0;
     }
 
     public function install(string $package): bool
     {
         $result = $this->exec("brew install {$package}");
+
         return $result['exit'] === 0;
     }
 
     public function uninstall(string $package): bool
     {
         $result = $this->exec("brew uninstall {$package}");
+
         return $result['exit'] === 0;
     }
 
     public function upgrade(string $package): bool
     {
         $result = $this->exec("brew upgrade {$package}");
+
         return $result['exit'] === 0;
     }
 
     public function isInstalled(string $package): bool
     {
         $result = $this->exec("brew list --formula {$package}");
+
         return $result['exit'] === 0;
     }
 
@@ -41,6 +46,7 @@ class BrewRunner
             return null;
         }
         $parts = explode(' ', trim($result['output']));
+
         return $parts[1] ?? null;
     }
 
@@ -51,6 +57,7 @@ class BrewRunner
             return null;
         }
         $info = json_decode($result['output'], true);
+
         return $info[0]['versions']['stable'] ?? null;
     }
 
@@ -59,7 +66,8 @@ class BrewRunner
     {
         $output = [];
         $exit = 0;
-        exec($cmd . ' 2>&1', $output, $exit);
+        exec($cmd.' 2>&1', $output, $exit);
+
         return ['exit' => $exit, 'output' => implode("\n", $output)];
     }
 }

@@ -14,7 +14,7 @@ class LeannInstaller implements InstallerInterface
     public function install(): bool
     {
         $output = [];
-        $exit   = 0;
+        $exit = 0;
         exec('pip3 install leann-py 2>&1', $output, $exit);
 
         if ($exit !== 0) {
@@ -34,7 +34,7 @@ class LeannInstaller implements InstallerInterface
     public function uninstall(): bool
     {
         $output = [];
-        $exit   = 0;
+        $exit = 0;
         exec('pip3 uninstall leann-py -y 2>&1', $output, $exit);
 
         if ($exit !== 0) {
@@ -65,8 +65,8 @@ class LeannInstaller implements InstallerInterface
         }
 
         return [
-            'current'   => $current ?: null,
-            'latest'    => $latest,
+            'current' => $current ?: null,
+            'latest' => $latest,
             'hasUpdate' => $current !== null && $latest !== null && $current !== $latest,
         ];
     }
@@ -75,6 +75,7 @@ class LeannInstaller implements InstallerInterface
     {
         $output = [];
         exec('python3 -c "import leann" 2>/dev/null', $output, $exit);
+
         return $exit === 0;
     }
 
@@ -82,6 +83,7 @@ class LeannInstaller implements InstallerInterface
     {
         $output = [];
         exec('python3 -c "import leann; print(leann.__version__)" 2>/dev/null', $output);
+
         return trim(implode('', $output)) ?: 'unknown';
     }
 }

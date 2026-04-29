@@ -14,7 +14,7 @@ class PaoInstaller implements InstallerInterface
     public function install(): bool
     {
         $output = [];
-        $exit   = 0;
+        $exit = 0;
         exec('composer global require nunomaduro/pao 2>&1', $output, $exit);
 
         if ($exit !== 0) {
@@ -29,7 +29,7 @@ class PaoInstaller implements InstallerInterface
     public function uninstall(): bool
     {
         $output = [];
-        $exit   = 0;
+        $exit = 0;
         exec('composer global remove nunomaduro/pao 2>&1', $output, $exit);
 
         if ($exit !== 0) {
@@ -56,8 +56,8 @@ class PaoInstaller implements InstallerInterface
         }
 
         return [
-            'current'   => $current ?: null,
-            'latest'    => $latest,
+            'current' => $current ?: null,
+            'latest' => $latest,
             'hasUpdate' => $current !== null && $latest !== null && $current !== $latest,
         ];
     }
@@ -66,6 +66,7 @@ class PaoInstaller implements InstallerInterface
     {
         $output = [];
         exec('which pao 2>/dev/null', $output);
+
         return ! empty($output);
     }
 
@@ -74,6 +75,7 @@ class PaoInstaller implements InstallerInterface
         $output = [];
         exec('pao --version 2>/dev/null', $output);
         $raw = trim(implode('', $output));
+
         return preg_replace('/^pao\s+/i', '', $raw) ?: 'unknown';
     }
 }

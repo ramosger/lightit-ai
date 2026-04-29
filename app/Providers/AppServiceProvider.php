@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Configurators\ClaudeCodeConfigurator;
-use App\Installers\Contracts\InstallerInterface;
 use App\Installers\EngramInstaller;
 use App\Installers\LeannInstaller;
 use App\Installers\PaoInstaller;
@@ -32,14 +31,14 @@ class AppServiceProvider extends ServiceProvider
 
         // Named installer map — used by all screens
         $this->app->singleton('installers', function ($app) {
-            $brew  = $app->make(BrewRunner::class);
+            $brew = $app->make(BrewRunner::class);
             $state = $app->make(StateManager::class);
 
             return [
                 'engram' => new EngramInstaller($brew, $state),
-                'pao'    => new PaoInstaller($state),
-                'rtk'    => new RtkInstaller($brew, $state),
-                'leann'  => new LeannInstaller($state),
+                'pao' => new PaoInstaller($state),
+                'rtk' => new RtkInstaller($brew, $state),
+                'leann' => new LeannInstaller($state),
             ];
         });
 

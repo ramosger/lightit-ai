@@ -23,13 +23,13 @@ class MainMenuScreen
             $command->line(Logo::render());
 
             $choice = select(
-                label:   'What would you like to do?',
+                label: 'What would you like to do?',
                 options: [
-                    'install'   => '📦  Install tools',
+                    'install' => '📦  Install tools',
                     'uninstall' => '🗑   Uninstall tools',
-                    'update'    => '🔄  Check for updates',
-                    'engram'    => '🧠  Engram memory',
-                    'exit'      => '✖   Exit',
+                    'update' => '🔄  Check for updates',
+                    'engram' => '🧠  Engram memory',
+                    'exit' => '✖   Exit',
                 ],
             );
 
@@ -38,14 +38,15 @@ class MainMenuScreen
             if ($choice === 'exit') {
                 $command->line('  <fg=gray>Goodbye!</>');
                 $command->newLine();
+
                 return;
             }
 
             match ($choice) {
-                'install'   => $this->install->render($command),
+                'install' => $this->install->render($command),
                 'uninstall' => $this->uninstall->render($command),
-                'update'    => $this->update->render($command),
-                'engram'    => $this->engram->render($command),
+                'update' => $this->update->render($command),
+                'engram' => $this->engram->render($command),
             };
 
             $command->newLine();

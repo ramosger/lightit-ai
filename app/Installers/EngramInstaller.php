@@ -41,11 +41,11 @@ class EngramInstaller implements InstallerInterface
     public function checkUpdate(): array
     {
         $current = $this->brew->installedVersion('engram');
-        $latest  = $this->brew->latestVersion('engram');
+        $latest = $this->brew->latestVersion('engram');
 
         return [
-            'current'   => $current,
-            'latest'    => $latest,
+            'current' => $current,
+            'latest' => $latest,
             'hasUpdate' => $current !== null && $latest !== null && $current !== $latest,
         ];
     }

@@ -50,6 +50,6 @@ class JsonMerger
             mkdir($dir, 0755, true);
         }
 
-        return file_put_contents($path, json_encode($merged, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n") !== false;
+        return file_put_contents($path, json_encode($merged, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n") !== false;
     }
 }

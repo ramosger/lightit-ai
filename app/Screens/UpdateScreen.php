@@ -20,36 +20,37 @@ class UpdateScreen
     public function render(Command $command): void
     {
         $toolConfig = config('tools');
-        $installed  = array_keys($this->state->getInstalled());
+        $installed = array_keys($this->state->getInstalled());
 
         if (empty($installed)) {
             $command->line('  <fg=yellow>No tools are currently installed.</>');
+
             return;
         }
 
         $command->line('  <fg=white;options=bold>Checking for updates...</>');
         $command->newLine();
 
-        $rows      = [];
+        $rows = [];
         $updatable = [];
 
         foreach ($installed as $key) {
-            $name   = $toolConfig[$key]['name'] ?? $key;
+            $name = $toolConfig[$key]['name'] ?? $key;
             $update = spin(
                 callback: fn () => $this->installers[$key]->checkUpdate(),
-                message:  "Checking {$name}...",
+                message: "Checking {$name}...",
             );
 
             $statusLabel = match (true) {
-                $update['hasUpdate']                               => '<fg=yellow>Update available</>',
+                $update['hasUpdate'] => '<fg=yellow>Update available</>',
                 $update['current'] !== null && ! $update['hasUpdate'] => '<fg=green>Up to date</>',
-                default                                            => '<fg=gray>Unknown</>',
+                default => '<fg=gray>Unknown</>',
             };
 
             $rows[] = [
                 $name,
                 $update['current'] ?? '-',
-                $update['latest']  ?? '-',
+                $update['latest'] ?? '-',
                 $statusLabel,
             ];
 
@@ -60,17 +61,18 @@ class UpdateScreen
 
         $command->table(
             headers: ['Tool', 'Installed', 'Latest', 'Status'],
-            rows:    $rows,
+            rows: $rows,
         );
 
         if (empty($updatable)) {
             $command->line('  <fg=green>All tools are up to date.</>');
+
             return;
         }
 
         $command->newLine();
         $apply = confirm(
-            label:   'Apply available updates now?',
+            label: 'Apply available updates now?',
             default: true,
         );
 
@@ -85,7 +87,7 @@ class UpdateScreen
 
             $success = spin(
                 callback: fn () => $this->installers[$key]->install(),
-                message:  "Updating {$name}...",
+                message: "Updating {$name}...",
             );
 
             $command->line($success

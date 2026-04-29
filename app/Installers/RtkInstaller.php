@@ -20,7 +20,7 @@ class RtkInstaller implements InstallerInterface
         if (! $success) {
             // Fallback: run official install script
             $output = [];
-            $exit   = 0;
+            $exit = 0;
             exec('curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh 2>&1', $output, $exit);
             $success = $exit === 0;
         }
@@ -44,7 +44,7 @@ class RtkInstaller implements InstallerInterface
             }
         } else {
             // Installed via script — remove binary from known locations
-            foreach (['/usr/local/bin/rtk', '/opt/homebrew/bin/rtk', $this->homeDir() . '/.local/bin/rtk'] as $bin) {
+            foreach (['/usr/local/bin/rtk', '/opt/homebrew/bin/rtk', $this->homeDir().'/.local/bin/rtk'] as $bin) {
                 if (file_exists($bin)) {
                     unlink($bin);
                 }
@@ -59,11 +59,11 @@ class RtkInstaller implements InstallerInterface
     public function checkUpdate(): array
     {
         $current = $this->resolveVersion();
-        $latest  = $this->brew->latestVersion('rtk');
+        $latest = $this->brew->latestVersion('rtk');
 
         return [
-            'current'   => $current ?: null,
-            'latest'    => $latest,
+            'current' => $current ?: null,
+            'latest' => $latest,
             'hasUpdate' => $current !== null && $latest !== null && $current !== $latest,
         ];
     }
@@ -72,6 +72,7 @@ class RtkInstaller implements InstallerInterface
     {
         $output = [];
         exec('which rtk 2>/dev/null', $output);
+
         return ! empty($output);
     }
 
@@ -80,6 +81,7 @@ class RtkInstaller implements InstallerInterface
         $output = [];
         exec('rtk --version 2>/dev/null', $output);
         $raw = trim(implode('', $output));
+
         // "rtk X.Y.Z" → "X.Y.Z"
         return preg_replace('/^rtk\s+/i', '', $raw) ?: 'unknown';
     }

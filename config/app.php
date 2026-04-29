@@ -1,5 +1,7 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+
 return [
 
     /*
@@ -14,14 +16,6 @@ return [
     */
 
     'name' => 'lightit-ai',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Default Command
-    |--------------------------------------------------------------------------
-    */
-
-    'default-command' => App\Commands\MainCommand::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -62,7 +56,7 @@ return [
     */
 
     'providers' => [
-        App\Providers\AppServiceProvider::class,
+        AppServiceProvider::class,
     ],
 
 ];

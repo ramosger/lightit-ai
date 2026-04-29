@@ -21,38 +21,41 @@ class UninstallScreen
     public function render(Command $command): void
     {
         $toolConfig = config('tools');
-        $installed  = $this->state->getInstalled();
+        $installed = $this->state->getInstalled();
 
         if (empty($installed)) {
             $command->line('  <fg=yellow>No tools are currently installed.</>');
+
             return;
         }
 
         $choices = [];
         foreach (array_keys($installed) as $key) {
-            $name           = $toolConfig[$key]['name'] ?? $key;
-            $version        = $installed[$key]['version'] ?? '?';
-            $choices[$key]  = "{$name} (v{$version})";
+            $name = $toolConfig[$key]['name'] ?? $key;
+            $version = $installed[$key]['version'] ?? '?';
+            $choices[$key] = "{$name} (v{$version})";
         }
 
         $selected = multiselect(
-            label:   'Which tools would you like to uninstall?',
+            label: 'Which tools would you like to uninstall?',
             options: $choices,
-            hint:    'Space to toggle, Enter to confirm',
+            hint: 'Space to toggle, Enter to confirm',
         );
 
         if (empty($selected)) {
             $command->line('  <fg=yellow>No tools selected. Returning to menu.</>');
+
             return;
         }
 
         $confirmed = confirm(
-            label:   'Are you sure you want to uninstall the selected tools?',
+            label: 'Are you sure you want to uninstall the selected tools?',
             default: false,
         );
 
         if (! $confirmed) {
             $command->line('  <fg=yellow>Uninstall cancelled.</>');
+
             return;
         }
 
@@ -60,11 +63,11 @@ class UninstallScreen
 
         foreach ($selected as $key) {
             $installer = $this->installers[$key];
-            $name      = $toolConfig[$key]['name'] ?? $key;
+            $name = $toolConfig[$key]['name'] ?? $key;
 
             $success = spin(
                 callback: fn () => $installer->uninstall(),
-                message:  "Uninstalling {$name}...",
+                message: "Uninstalling {$name}...",
             );
 
             if ($success) {

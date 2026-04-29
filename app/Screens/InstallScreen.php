@@ -23,27 +23,28 @@ class InstallScreen
     public function render(Command $command): void
     {
         $toolConfig = config('tools');
-        $choices    = [];
+        $choices = [];
 
         foreach ($this->installers as $key => $installer) {
-            $label          = $toolConfig[$key]['name'] . ' — ' . $toolConfig[$key]['description'];
-            $choices[$key]  = $label;
+            $label = $toolConfig[$key]['name'].' — '.$toolConfig[$key]['description'];
+            $choices[$key] = $label;
         }
 
         $selected = multiselect(
-            label:    'Which tools would you like to install?',
-            options:  $choices,
-            default:  array_keys($choices),
-            hint:     'Space to toggle, Enter to confirm',
+            label: 'Which tools would you like to install?',
+            options: $choices,
+            default: array_keys($choices),
+            hint: 'Space to toggle, Enter to confirm',
         );
 
         if (empty($selected)) {
             $command->line('  <fg=yellow>No tools selected. Returning to menu.</>');
+
             return;
         }
 
         $configClaude = confirm(
-            label:   'Configure Claude Code with Engram MCP? (non-destructive — merges with your existing config)',
+            label: 'Configure Claude Code with Engram MCP? (non-destructive — merges with your existing config)',
             default: true,
         );
 
@@ -52,17 +53,18 @@ class InstallScreen
 
         foreach ($selected as $key) {
             $installer = $this->installers[$key];
-            $name      = $toolConfig[$key]['name'];
+            $name = $toolConfig[$key]['name'];
 
             if ($installer->isInstalled() && $this->state->isInstalled($key)) {
                 $command->line("  <fg=gray>✓ {$name} already installed, skipping.</>");
                 $results[$key] = 'skipped';
+
                 continue;
             }
 
             $success = spin(
                 callback: fn () => $installer->install(),
-                message:  "Installing {$name}...",
+                message: "Installing {$name}...",
             );
 
             if ($success) {
@@ -79,7 +81,7 @@ class InstallScreen
 
             $mcpOk = spin(
                 callback: fn () => $this->claudeConfigurator->configureEngram(),
-                message:  'Configuring Claude Code — MCP server...',
+                message: 'Configuring Claude Code — MCP server...',
             );
             $command->line($mcpOk
                 ? '  <fg=green>✓ Engram MCP server added to ~/.claude/settings.json</>'
@@ -87,7 +89,7 @@ class InstallScreen
 
             $mdOk = spin(
                 callback: fn () => $this->claudeConfigurator->configureMemoryInstructions(),
-                message:  'Configuring Claude Code — CLAUDE.md...',
+                message: 'Configuring Claude Code — CLAUDE.md...',
             );
             $command->line($mdOk
                 ? '  <fg=green>✓ Memory instructions added to ~/.claude/CLAUDE.md</>'

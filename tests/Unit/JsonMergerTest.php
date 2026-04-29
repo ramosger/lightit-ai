@@ -3,11 +3,11 @@
 use App\Support\JsonMerger;
 
 beforeEach(function () {
-    $this->merger = new JsonMerger();
+    $this->merger = new JsonMerger;
 });
 
 it('adds new keys from patch without overwriting base', function () {
-    $base  = ['existing' => 'value', 'nested' => ['a' => 1]];
+    $base = ['existing' => 'value', 'nested' => ['a' => 1]];
     $patch = ['new' => 'added', 'nested' => ['b' => 2]];
 
     $result = $this->merger->merge($base, $patch);
@@ -19,7 +19,7 @@ it('adds new keys from patch without overwriting base', function () {
 });
 
 it('does not overwrite existing scalar values', function () {
-    $base  = ['key' => 'original'];
+    $base = ['key' => 'original'];
     $patch = ['key' => 'overwrite'];
 
     $result = $this->merger->merge($base, $patch);
@@ -28,7 +28,7 @@ it('does not overwrite existing scalar values', function () {
 });
 
 it('deeply merges nested arrays', function () {
-    $base  = ['mcpServers' => ['other' => ['command' => 'other']]];
+    $base = ['mcpServers' => ['other' => ['command' => 'other']]];
     $patch = ['mcpServers' => ['engram' => ['command' => 'engram', 'args' => ['mcp']]]];
 
     $result = $this->merger->merge($base, $patch);
@@ -39,7 +39,7 @@ it('deeply merges nested arrays', function () {
 });
 
 it('merges into a file preserving existing content', function () {
-    $tmp   = tempnam(sys_get_temp_dir(), 'jm_');
+    $tmp = tempnam(sys_get_temp_dir(), 'jm_');
     file_put_contents($tmp, json_encode(['existing' => true]));
 
     $this->merger->mergeIntoFile($tmp, ['new' => 'value']);
@@ -53,7 +53,7 @@ it('merges into a file preserving existing content', function () {
 });
 
 it('creates file if it does not exist', function () {
-    $tmp = sys_get_temp_dir() . '/jm_new_' . uniqid() . '.json';
+    $tmp = sys_get_temp_dir().'/jm_new_'.uniqid().'.json';
 
     $this->merger->mergeIntoFile($tmp, ['key' => 'value']);
 

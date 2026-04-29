@@ -12,7 +12,7 @@ class ClaudeCodeConfigurator
         private readonly JsonMerger $merger,
     ) {
         $home = $_SERVER['HOME'] ?? posix_getpwuid(posix_getuid())['dir'];
-        $this->claudeDir = $home . '/.claude';
+        $this->claudeDir = $home.'/.claude';
     }
 
     /**
@@ -21,13 +21,13 @@ class ClaudeCodeConfigurator
      */
     public function configureEngram(): bool
     {
-        $settingsPath = $this->claudeDir . '/settings.json';
+        $settingsPath = $this->claudeDir.'/settings.json';
 
         return $this->merger->mergeIntoFile($settingsPath, [
             'mcpServers' => [
                 'engram' => [
                     'command' => 'engram',
-                    'args'    => ['mcp'],
+                    'args' => ['mcp'],
                 ],
             ],
         ]);
@@ -39,8 +39,8 @@ class ClaudeCodeConfigurator
      */
     public function configureMemoryInstructions(): bool
     {
-        $claudeMdPath = $this->claudeDir . '/CLAUDE.md';
-        $marker       = '<!-- lightit-ai:engram -->';
+        $claudeMdPath = $this->claudeDir.'/CLAUDE.md';
+        $marker = '<!-- lightit-ai:engram -->';
 
         if (file_exists($claudeMdPath) && str_contains(file_get_contents($claudeMdPath), $marker)) {
             return true; // Already configured
@@ -67,11 +67,12 @@ MD;
 
     public function isEngramConfigured(): bool
     {
-        $settingsPath = $this->claudeDir . '/settings.json';
+        $settingsPath = $this->claudeDir.'/settings.json';
         if (! file_exists($settingsPath)) {
             return false;
         }
         $data = json_decode(file_get_contents($settingsPath), true);
+
         return isset($data['mcpServers']['engram']);
     }
 }

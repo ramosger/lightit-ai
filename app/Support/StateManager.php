@@ -11,7 +11,7 @@ class StateManager
 
     public function __construct()
     {
-        $this->path = ($_SERVER['HOME'] ?? posix_getpwuid(posix_getuid())['dir']) . '/.lightit-ai/state.json';
+        $this->path = ($_SERVER['HOME'] ?? posix_getpwuid(posix_getuid())['dir']).'/.lightit-ai/state.json';
         $this->load();
     }
 
@@ -19,6 +19,7 @@ class StateManager
     {
         if (! file_exists($this->path)) {
             $this->state = ['installed' => [], 'claudeCodeConfigured' => false];
+
             return;
         }
 
@@ -38,8 +39,8 @@ class StateManager
     public function markInstalled(string $tool, string $version): void
     {
         $this->state['installed'][$tool] = [
-            'version'     => $version,
-            'installedAt' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+            'version' => $version,
+            'installedAt' => (new \DateTimeImmutable)->format(\DateTimeInterface::ATOM),
         ];
         $this->save();
     }
