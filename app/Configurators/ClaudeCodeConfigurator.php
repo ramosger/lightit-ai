@@ -15,10 +15,6 @@ class ClaudeCodeConfigurator
         $this->claudeDir = $home.'/.claude';
     }
 
-    /**
-     * Merge Engram MCP server entry into ~/.claude/settings.json.
-     * Never touches any existing keys.
-     */
     public function configureEngram(): bool
     {
         $settingsPath = $this->claudeDir.'/settings.json';
@@ -33,17 +29,13 @@ class ClaudeCodeConfigurator
         ]);
     }
 
-    /**
-     * Append Engram memory instructions to ~/.claude/CLAUDE.md.
-     * Idempotent: skips if the lightit-ai:engram marker is already present.
-     */
     public function configureMemoryInstructions(): bool
     {
         $claudeMdPath = $this->claudeDir.'/CLAUDE.md';
         $marker = '<!-- lightit-ai:engram -->';
 
         if (file_exists($claudeMdPath) && str_contains(file_get_contents($claudeMdPath), $marker)) {
-            return true; // Already configured
+            return true;
         }
 
         $block = <<<MD

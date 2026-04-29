@@ -18,7 +18,11 @@ class MainMenuScreen
 
     public function render(Command $command): void
     {
+        // Enter alternate screen buffer — keeps terminal history clean
+        system('tput smcup');
+
         while (true) {
+            system('tput clear');
             $command->line(Logo::render());
 
             $prompt = new QuitableSelectPrompt(
@@ -38,7 +42,7 @@ class MainMenuScreen
             $command->newLine();
 
             if ($choice === 'exit' || $prompt->quitted) {
-                passthru('clear');
+                system('tput rmcup');
 
                 return;
             }
@@ -50,7 +54,6 @@ class MainMenuScreen
                 'engram' => $this->engram->render($command),
             };
 
-            passthru('clear');
         }
     }
 }

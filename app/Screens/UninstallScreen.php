@@ -13,7 +13,6 @@ use function Laravel\Prompts\spin;
 
 class UninstallScreen
 {
-    /** @param array<string, InstallerInterface> $installers */
     public function __construct(
         private readonly array $installers,
         private readonly StateManager $state,

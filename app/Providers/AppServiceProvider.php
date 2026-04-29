@@ -98,7 +98,7 @@ class AppServiceProvider extends ServiceProvider
         Prompt::theme('lightit');
 
         Prompt::cancelUsing(function () {
-            passthru('clear');
+            system('tput rmcup');
             exit(0);
         });
     }

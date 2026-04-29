@@ -64,6 +64,8 @@ class InstallScreen
         $selected = $prompt->prompt();
 
         if ($prompt->cancelled || empty($selected)) {
+            passthru('clear');
+
             return;
         }
 
