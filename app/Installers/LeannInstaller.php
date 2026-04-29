@@ -48,6 +48,7 @@ class LeannInstaller implements InstallerInterface
             return false;
         }
 
+        $this->linkBinaries($venv);
         $this->state->markInstalled('leann', $this->resolveVersion());
 
         return true;
@@ -64,6 +65,7 @@ class LeannInstaller implements InstallerInterface
             return false;
         }
 
+        $this->unlinkBinaries();
         $this->state->markUninstalled('leann');
 
         return true;
@@ -111,16 +113,58 @@ class LeannInstaller implements InstallerInterface
         }
 
         $output = [];
+        $exit = 0;
         exec("uv pip show leann --python {$venv}/bin/python 2>/dev/null", $output, $exit);
 
         return $exit === 0;
     }
 
+    private function linkBinaries(string $venv): void
+    {
+        $brewBin = $this->brewBinPath();
+        foreach (['leann', 'leann_mcp'] as $bin) {
+            $target = "{$brewBin}/{$bin}";
+            if (file_exists($target) || is_link($target)) {
+                unlink($target);
+            }
+            symlink("{$venv}/bin/{$bin}", $target);
+        }
+    }
+
+    private function unlinkBinaries(): void
+    {
+        $brewBin = $this->brewBinPath();
+        foreach (['leann', 'leann_mcp'] as $bin) {
+            $target = "{$brewBin}/{$bin}";
+            if (is_link($target)) {
+                unlink($target);
+            }
+        }
+    }
+
+    private function brewBinPath(): string
+    {
+        $output = [];
+        exec('brew --prefix 2>/dev/null', $output);
+        $prefix = trim($output[0] ?? '');
+
+        return ($prefix !== '' ? $prefix : '/opt/homebrew').'/bin';
+    }
+
     private function venvPath(): string
     {
-        $home = $_SERVER['HOME'] ?? posix_getpwuid(posix_getuid())['dir'];
+        return $this->homeDir().'/.lightit-ai/leann-venv';
+    }
 
-        return $home.'/.lightit-ai/leann-venv';
+    private function homeDir(): string
+    {
+        if (isset($_SERVER['HOME']) && $_SERVER['HOME'] !== '') {
+            return $_SERVER['HOME'];
+        }
+        $output = [];
+        exec('echo ~', $output);
+
+        return $output[0] ?? '/tmp';
     }
 
     private function ensureUv(): bool
