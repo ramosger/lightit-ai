@@ -72,15 +72,27 @@ class LeannInstaller implements InstallerInterface
     public function checkUpdate(): array
     {
         $current = $this->resolveVersion();
-
         $venv = $this->venvPath();
+
         $output = [];
-        exec("uv pip index versions leann --python {$venv}/bin/python 2>/dev/null", $output);
+        exec("uv pip list --outdated --python {$venv}/bin/python 2>/dev/null", $output);
         $latest = null;
         foreach ($output as $line) {
-            if (preg_match('/Available versions:\s*([\d.]+)/', $line, $m)) {
-                $latest = $m[1];
+            if (preg_match('/^leann\s+([\d.]+)\s+([\d.]+)/i', $line, $m)) {
+                $latest = $m[2];
                 break;
+            }
+        }
+
+        if ($latest === null) {
+            $json = @file_get_contents('https://pypi.org/pypi/leann/json');
+            if ($json !== false) {
+                $data = json_decode($json, true);
+                $releases = array_keys($data['releases'] ?? []);
+                if (! empty($releases)) {
+                    usort($releases, 'version_compare');
+                    $latest = end($releases);
+                }
             }
         }
 

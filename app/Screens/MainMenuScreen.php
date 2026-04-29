@@ -25,8 +25,8 @@ class MainMenuScreen
                 label: 'Menu',
                 options: [
                     'install' => 'Install Stack',
+                    'update' => 'Update tools',
                     'uninstall' => 'Uninstall tools',
-                    'update' => 'Check for updates',
                     'engram' => 'Engram memory',
                     'exit' => 'Exit',
                 ],

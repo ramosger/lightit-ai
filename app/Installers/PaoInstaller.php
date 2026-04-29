@@ -58,7 +58,7 @@ class PaoInstaller implements InstallerInterface
         exec('composer global show nunomaduro/pao --latest 2>/dev/null', $output);
         $latest = null;
         foreach ($output as $line) {
-            if (preg_match('/latest\s*:\s*([\d.]+)/', $line, $m)) {
+            if (preg_match('/latest\s*:\s*v?([\d.]+)/', $line, $m)) {
                 $latest = $m[1];
                 break;
             }
@@ -75,6 +75,12 @@ class PaoInstaller implements InstallerInterface
     {
         $output = [];
         exec('which pao 2>/dev/null', $output);
+        if (! empty($output)) {
+            return true;
+        }
+
+        $output = [];
+        exec('composer global show nunomaduro/pao 2>/dev/null', $output);
 
         return ! empty($output);
     }
@@ -82,9 +88,13 @@ class PaoInstaller implements InstallerInterface
     private function resolveVersion(): string
     {
         $output = [];
-        exec('pao --version 2>/dev/null', $output);
-        $raw = trim(implode('', $output));
+        exec('composer global show nunomaduro/pao 2>/dev/null', $output);
+        foreach ($output as $line) {
+            if (preg_match('/^versions\s*:\s*\*?\s*v?([\d.]+)/', $line, $m)) {
+                return $m[1];
+            }
+        }
 
-        return preg_replace('/^pao\s+/i', '', $raw) ?: 'unknown';
+        return 'unknown';
     }
 }

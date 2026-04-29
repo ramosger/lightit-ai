@@ -69,7 +69,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(UpdateScreen::class, function ($app) {
             return new UpdateScreen(
                 $app->make('installers'),
-                $app->make(StateManager::class),
             );
         });
 
