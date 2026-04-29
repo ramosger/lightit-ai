@@ -27,7 +27,7 @@ class UpdateScreen
         ));
 
         if (empty($installed)) {
-            $command->line("  <fg=$c>No tools are currently installed.</>");
+            $command->line("<fg=$c>No tools are currently installed</>");
             $command->newLine();
             pause();
 
@@ -56,8 +56,8 @@ class UpdateScreen
             $update = $updates[$key];
 
             $statusLabel = match (true) {
-                $update['hasUpdate'] => "⬆  Update available",
-                $update['current'] !== null => "✓  Up to date",
+                $update['hasUpdate'] => "⬆ Update available",
+                $update['current'] !== null => "✓ Up to date",
                 default => "–  Unknown",
             };
 
@@ -83,7 +83,8 @@ class UpdateScreen
         $this->renderTable($command, $rows);
 
         if (empty($updatable)) {
-            $command->line("  <fg=green;options=bold>✓ All tools are up to date.</>");
+            $command->newLine();
+            $command->line("<fg=green;options=bold>✓ All tools are up to date</>");
             $command->newLine();
             pause();
 
@@ -111,12 +112,12 @@ class UpdateScreen
             );
 
             $command->line($success
-                ? "  <fg=green>✓ {$name} updated.</>"
-                : "  <fg=red>✗ Failed to update {$name}.</>");
+                ? "<fg=green>✓ {$name} updated.</>"
+                : "<fg=red>✗ Failed to update {$name}.</>");
         }
 
         $command->newLine();
-        $command->line("  <fg=$c;options=bold>Updates completed</>");
+        $command->line("<fg=$c;options=bold>Updates completed</>");
         $command->newLine();
         pause();
     }
@@ -135,22 +136,22 @@ class UpdateScreen
 
         $pad = fn (string $val, int $width) => $val . str_repeat(' ', max(0, $width - mb_strlen($val)));
 
-        $top    = "  <fg=$c>┌─" . str_repeat('─', $colWidths['name'])    . "─┬─" . str_repeat('─', $colWidths['current']) . "─┬─" . str_repeat('─', $colWidths['latest']) . "─┬─" . str_repeat('─', $colWidths['status']) . "─┐</>";
-        $div    = "  <fg=$c>├─" . str_repeat('─', $colWidths['name'])    . "─┼─" . str_repeat('─', $colWidths['current']) . "─┼─" . str_repeat('─', $colWidths['latest']) . "─┼─" . str_repeat('─', $colWidths['status']) . "─┤</>";
-        $bottom = "  <fg=$c>└─" . str_repeat('─', $colWidths['name'])    . "─┴─" . str_repeat('─', $colWidths['current']) . "─┴─" . str_repeat('─', $colWidths['latest']) . "─┴─" . str_repeat('─', $colWidths['status']) . "─┘</>";
+        $top    = "<fg=$c>┌─" . str_repeat('─', $colWidths['name'])    . "─┬─" . str_repeat('─', $colWidths['current']) . "─┬─" . str_repeat('─', $colWidths['latest']) . "─┬─" . str_repeat('─', $colWidths['status']) . "─┐</>";
+        $div    = "<fg=$c>├─" . str_repeat('─', $colWidths['name'])    . "─┼─" . str_repeat('─', $colWidths['current']) . "─┼─" . str_repeat('─', $colWidths['latest']) . "─┼─" . str_repeat('─', $colWidths['status']) . "─┤</>";
+        $bottom = "<fg=$c>└─" . str_repeat('─', $colWidths['name'])    . "─┴─" . str_repeat('─', $colWidths['current']) . "─┴─" . str_repeat('─', $colWidths['latest']) . "─┴─" . str_repeat('─', $colWidths['status']) . "─┘</>";
 
-        $headerLine = "  <fg=$c>│</> <options=bold>" . $pad('Tool', $colWidths['name']) . "</> <fg=$c>│</> <options=bold>" . $pad('Installed', $colWidths['current']) . "</> <fg=$c>│</> <options=bold>" . $pad('Latest', $colWidths['latest']) . "</> <fg=$c>│</> <options=bold>" . $pad('Status', $colWidths['status']) . "</> <fg=$c>│</>";
+        $b = "<fg=$c>│</>";
+        $headerLine = "$b <options=bold>" . $pad('Tool', $colWidths['name']) . "</> $b <options=bold>" . $pad('Installed', $colWidths['current']) . "</> $b <options=bold>" . $pad('Latest', $colWidths['latest']) . "</> $b <options=bold>" . $pad('Status', $colWidths['status']) . "</> $b";
 
         $command->line($top);
         $command->line($headerLine);
         $command->line($div);
 
         foreach ($rows as $row) {
-            $line = "  <fg=$c>│</> " . $pad($row['name'], $colWidths['name'])
-                . " <fg=$c>│</> " . $pad($row['current'], $colWidths['current'])
-                . " <fg=$c>│</> " . $pad($row['latest'], $colWidths['latest'])
-                . " <fg=$c>│</> <fg={$row['color']}>" . $pad($row['status'], $colWidths['status']) . "</>"
-                . " <fg=$c>│</>";
+            $line = "$b " . $pad($row['name'], $colWidths['name'])
+                . " $b " . $pad($row['current'], $colWidths['current'])
+                . " $b " . $pad($row['latest'], $colWidths['latest'])
+                . " $b <fg={$row['color']}>" . $pad($row['status'], $colWidths['status']) . "</> $b";
             $command->line($line);
         }
 
