@@ -40,6 +40,9 @@
             "pestphp/pest-plugin": true
         }
     },
+    "scripts": {
+        "build": "php application app:build lightit-ai"
+    },
     "minimum-stability": "stable",
     "prefer-stable": true,
     "bin": ["application"]
