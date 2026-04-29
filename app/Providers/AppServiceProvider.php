@@ -15,7 +15,15 @@ use App\Screens\UpdateScreen;
 use App\Support\BrewRunner;
 use App\Support\JsonMerger;
 use App\Support\StateManager;
+use App\Prompts\BackableMultiSelectPrompt;
+use App\Prompts\BackableSelectPrompt;
+use App\Prompts\QuitableSelectPrompt;
+use App\Themes\MultiSelectPromptRenderer;
+use App\Themes\SelectPromptRenderer;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Prompts\MultiSelectPrompt;
+use Laravel\Prompts\Prompt;
+use Laravel\Prompts\SelectPrompt;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,7 +37,6 @@ class AppServiceProvider extends ServiceProvider
             return new ClaudeCodeConfigurator($app->make(JsonMerger::class));
         });
 
-        // Named installer map — used by all screens
         $this->app->singleton('installers', function ($app) {
             $brew = $app->make(BrewRunner::class);
             $state = $app->make(StateManager::class);
@@ -76,5 +83,18 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+        Prompt::addTheme('lightit', [
+            SelectPrompt::class => SelectPromptRenderer::class,
+            MultiSelectPrompt::class => MultiSelectPromptRenderer::class,
+            BackableMultiSelectPrompt::class => MultiSelectPromptRenderer::class,
+            QuitableSelectPrompt::class => SelectPromptRenderer::class,
+            BackableSelectPrompt::class => SelectPromptRenderer::class,
+        ]);
+
+        Prompt::theme('lightit');
+
+        Prompt::cancelUsing(fn () => null);
+    }
 }

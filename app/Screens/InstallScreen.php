@@ -5,10 +5,11 @@ namespace App\Screens;
 use App\Configurators\ClaudeCodeConfigurator;
 use App\Installers\Contracts\InstallerInterface;
 use App\Support\StateManager;
+use App\Prompts\BackableMultiSelectPrompt;
+use App\Theme;
 use LaravelZero\Framework\Commands\Command;
 
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\spin;
 
 class InstallScreen
@@ -22,6 +23,7 @@ class InstallScreen
 
     public function render(Command $command): void
     {
+        $c = Theme::PRIMARY;
         $toolConfig = config('tools');
         $choices = [];
 
@@ -30,16 +32,16 @@ class InstallScreen
             $choices[$key] = $label;
         }
 
-        $selected = multiselect(
+        $prompt = new BackableMultiSelectPrompt(
             label: 'Which tools would you like to install?',
             options: $choices,
             default: array_keys($choices),
-            hint: 'Space to toggle, Enter to confirm',
+            hint: Theme::NAV_HINT_MULTI,
         );
 
-        if (empty($selected)) {
-            $command->line('  <fg=yellow>No tools selected. Returning to menu.</>');
+        $selected = $prompt->prompt();
 
+        if ($prompt->cancelled || empty($selected)) {
             return;
         }
 
@@ -56,7 +58,7 @@ class InstallScreen
             $name = $toolConfig[$key]['name'];
 
             if ($installer->isInstalled() && $this->state->isInstalled($key)) {
-                $command->line("  <fg=gray>✓ {$name} already installed, skipping.</>");
+                $command->line("  <fg=$c>✓ {$name} already installed, skipping.</>");
                 $results[$key] = 'skipped';
 
                 continue;
@@ -101,7 +103,7 @@ class InstallScreen
         }
 
         $command->newLine();
-        $command->line('  <fg=white;options=bold>Installation complete!</>');
-        $command->line('  <fg=gray>Restart Claude Code to activate Engram MCP.</>');
+        $command->line("  <fg=$c;options=bold>Installation complete!</>");
+        $command->line("  <fg=$c>Restart Claude Code to activate Engram MCP.</>");
     }
 }

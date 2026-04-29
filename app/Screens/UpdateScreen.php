@@ -4,6 +4,7 @@ namespace App\Screens;
 
 use App\Installers\Contracts\InstallerInterface;
 use App\Support\StateManager;
+use App\Theme;
 use LaravelZero\Framework\Commands\Command;
 
 use function Laravel\Prompts\confirm;
@@ -19,16 +20,17 @@ class UpdateScreen
 
     public function render(Command $command): void
     {
+        $c = Theme::PRIMARY;
         $toolConfig = config('tools');
         $installed = array_keys($this->state->getInstalled());
 
         if (empty($installed)) {
-            $command->line('  <fg=yellow>No tools are currently installed.</>');
+            $command->line("  <fg=$c>No tools are currently installed.</>");
 
             return;
         }
 
-        $command->line('  <fg=white;options=bold>Checking for updates...</>');
+        $command->line("  <fg=$c;options=bold>Checking for updates...</>");
         $command->newLine();
 
         $rows = [];
@@ -42,9 +44,9 @@ class UpdateScreen
             );
 
             $statusLabel = match (true) {
-                $update['hasUpdate'] => '<fg=yellow>Update available</>',
+                $update['hasUpdate'] => "<fg=$c>Update available</>",
                 $update['current'] !== null && ! $update['hasUpdate'] => '<fg=green>Up to date</>',
-                default => '<fg=gray>Unknown</>',
+                default => "<fg=$c>Unknown</>",
             };
 
             $rows[] = [
@@ -96,6 +98,6 @@ class UpdateScreen
         }
 
         $command->newLine();
-        $command->line('  <fg=white;options=bold>Updates complete.</>');
+        $command->line("  <fg=$c;options=bold>Updates complete.</>");
     }
 }

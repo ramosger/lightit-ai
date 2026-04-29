@@ -3,9 +3,9 @@
 namespace App\Screens;
 
 use App\Logo;
+use App\Prompts\QuitableSelectPrompt;
+use App\Theme;
 use LaravelZero\Framework\Commands\Command;
-
-use function Laravel\Prompts\select;
 
 class MainMenuScreen
 {
@@ -19,25 +19,26 @@ class MainMenuScreen
     public function render(Command $command): void
     {
         while (true) {
-            // Re-render logo and menu each loop iteration for a clean feel
             $command->line(Logo::render());
 
-            $choice = select(
-                label: 'What would you like to do?',
+            $prompt = new QuitableSelectPrompt(
+                label: 'Menu',
                 options: [
-                    'install' => '📦  Install tools',
-                    'uninstall' => '🗑   Uninstall tools',
-                    'update' => '🔄  Check for updates',
-                    'engram' => '🧠  Engram memory',
-                    'exit' => '✖   Exit',
+                    'install' => 'Install tools',
+                    'uninstall' => 'Uninstall tools',
+                    'update' => 'Check for updates',
+                    'engram' => 'Engram memory',
+                    'exit' => 'Exit',
                 ],
+                hint: Theme::NAV_HINT,
             );
+
+            $choice = $prompt->prompt();
 
             $command->newLine();
 
-            if ($choice === 'exit') {
-                $command->line('  <fg=gray>Goodbye!</>');
-                $command->newLine();
+            if ($choice === 'exit' || $prompt->quitted) {
+                passthru('clear');
 
                 return;
             }
@@ -49,7 +50,7 @@ class MainMenuScreen
                 'engram' => $this->engram->render($command),
             };
 
-            $command->newLine();
+            passthru('clear');
         }
     }
 }

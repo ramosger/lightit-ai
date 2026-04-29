@@ -3,11 +3,12 @@
 namespace App\Screens;
 
 use App\Installers\Contracts\InstallerInterface;
+use App\Prompts\BackableMultiSelectPrompt;
 use App\Support\StateManager;
+use App\Theme;
 use LaravelZero\Framework\Commands\Command;
 
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\spin;
 
 class UninstallScreen
@@ -20,11 +21,12 @@ class UninstallScreen
 
     public function render(Command $command): void
     {
+        $c = Theme::PRIMARY;
         $toolConfig = config('tools');
         $installed = $this->state->getInstalled();
 
         if (empty($installed)) {
-            $command->line('  <fg=yellow>No tools are currently installed.</>');
+            $command->line("  <fg=$c>No tools are currently installed.</>");
 
             return;
         }
@@ -36,15 +38,15 @@ class UninstallScreen
             $choices[$key] = "{$name} (v{$version})";
         }
 
-        $selected = multiselect(
+        $prompt = new BackableMultiSelectPrompt(
             label: 'Which tools would you like to uninstall?',
             options: $choices,
-            hint: 'Space to toggle, Enter to confirm',
+            hint: Theme::NAV_HINT_MULTI,
         );
 
-        if (empty($selected)) {
-            $command->line('  <fg=yellow>No tools selected. Returning to menu.</>');
+        $selected = $prompt->prompt();
 
+        if ($prompt->cancelled || empty($selected)) {
             return;
         }
 
@@ -54,7 +56,7 @@ class UninstallScreen
         );
 
         if (! $confirmed) {
-            $command->line('  <fg=yellow>Uninstall cancelled.</>');
+            $command->line("  <fg=$c>Uninstall cancelled.</>");
 
             return;
         }
@@ -78,6 +80,6 @@ class UninstallScreen
         }
 
         $command->newLine();
-        $command->line('  <fg=white;options=bold>Done.</>');
+        $command->line("  <fg=$c;options=bold>Done.</>");
     }
 }
