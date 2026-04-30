@@ -26,7 +26,7 @@ class MainMenuScreen
             $command->line(Logo::render());
 
             $prompt = new QuitableSelectPrompt(
-                label: 'Menu',
+                label: '',
                 options: [
                     'install' => 'Install Stack',
                     'update' => 'Update tools',

@@ -20,13 +20,13 @@ class Logo
 
         $lines = [];
         foreach ($spark as $i => $sparkLine) {
-            $wIdx = $i - 2;
+            $wIdx = $i - 3;
             if ($wIdx >= 0 && $wIdx < count($wordmark)) {
                 $text = $wordmark[$wIdx];
                 $pad  = str_repeat(' ', max(0, $width - mb_strwidth($text)));
-                $lines[] = "  <fg=#794DFC>{$text}{$pad} {$sparkLine}</>";
+                $lines[] = "  <fg=#794DFC>{$text}{$pad}</> <fg=#794DFC;options=bold>{$sparkLine}</>";
             } else {
-                $lines[] = '  <fg=#794DFC>' . str_repeat(' ', $width + 1) . $sparkLine . '</>';
+                $lines[] = '  ' . str_repeat(' ', $width + 1) . "<fg=#794DFC;options=bold>{$sparkLine}</>";
             }
         }
 
@@ -43,15 +43,15 @@ class Logo
     {
         return [
             '                  ',
-            '        ░▒        ',
-            '      ░▒▓▒        ',
-            '    ░▒▓▓▓▒        ',
-            '    ░▓▓▓▓▒░░░░    ',
-            '    ░▓▓▓▓▓▓▓▓▓▒   ',
-            '    ░▓▓▓▓▓▓▓▓▓▒   ',
-            '         ░▓▓▓▓▒   ',
-            '         ░▓▓▓▒    ',
-            '         ░▓▒      ',
+            '        ▓▓        ',
+            '      ▓▓█▓        ',
+            '    ▓▓███▓        ',
+            '    ▓████▓▓▓▓    ',
+            '    ▓█████████▓   ',
+            '    ▓█████████▓   ',
+            '         ▓████▓   ',
+            '         ▓███▓    ',
+            '         ▓█▓      ',
             '                  ',
         ];
     }
