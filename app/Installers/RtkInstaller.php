@@ -67,13 +67,25 @@ class RtkInstaller implements InstallerInterface
     public function checkUpdate(): array
     {
         $current = $this->resolveVersion();
-        $latest = $this->brew->latestVersion('rtk');
+        $latest = $this->fetchLatestVersion();
 
         return [
             'current' => $current ?: null,
             'latest' => $latest,
             'hasUpdate' => $current !== null && $latest !== null && $current !== $latest,
         ];
+    }
+
+    private function fetchLatestVersion(): ?string
+    {
+        $ctx = stream_context_create(['http' => ['header' => "User-Agent: lightit-ai\r\n", 'timeout' => 5]]);
+        $json = @file_get_contents('https://api.github.com/repos/rtk-ai/rtk/releases/latest', false, $ctx);
+        if ($json === false) {
+            return null;
+        }
+        $tag = json_decode($json, true)['tag_name'] ?? null;
+
+        return $tag ? ltrim($tag, 'v') : null;
     }
 
     public function isInstalled(): bool

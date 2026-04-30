@@ -3,6 +3,7 @@
 namespace App\Screens;
 
 use App\Installers\Contracts\InstallerInterface;
+use App\Support\ParallelUpdateChecker;
 use App\Theme;
 use LaravelZero\Framework\Commands\Command;
 
@@ -35,14 +36,7 @@ class UpdateScreen
         }
 
         $updates = spin(
-            callback: function () use ($installed) {
-                $results = [];
-                foreach ($installed as $key) {
-                    $results[$key] = $this->installers[$key]->checkUpdate();
-                }
-
-                return $results;
-            },
+            callback: fn () => (new ParallelUpdateChecker($this->installers))->run($installed),
             message: 'Checking for updates...',
         );
 
