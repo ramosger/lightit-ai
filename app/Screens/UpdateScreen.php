@@ -22,6 +22,9 @@ class UpdateScreen
     {
         $c = Theme::PRIMARY;
         $toolConfig = config('tools');
+
+        $command->line("<fg=$c;options=bold> Update tools</>");
+
         $installed = array_keys(array_filter(
             $this->installers,
             fn ($installer) => $installer->isInstalled(),

@@ -2,12 +2,14 @@
 
 namespace App\Installers;
 
+use App\Installers\Concerns\FetchesGithubRelease;
 use App\Installers\Contracts\InstallerInterface;
 use App\Support\BrewRunner;
 use App\Support\StateManager;
 
 class RtkInstaller implements InstallerInterface
 {
+    use FetchesGithubRelease;
     private ?string $lastError = null;
 
     public function __construct(
@@ -78,14 +80,7 @@ class RtkInstaller implements InstallerInterface
 
     private function fetchLatestVersion(): ?string
     {
-        $ctx = stream_context_create(['http' => ['header' => "User-Agent: lightit-ai\r\n", 'timeout' => 5]]);
-        $json = @file_get_contents('https://api.github.com/repos/rtk-ai/rtk/releases/latest', false, $ctx);
-        if ($json === false) {
-            return null;
-        }
-        $tag = json_decode($json, true)['tag_name'] ?? null;
-
-        return $tag ? ltrim($tag, 'v') : null;
+        return $this->fetchGithubLatestTag('rtk-ai', 'rtk');
     }
 
     public function isInstalled(): bool

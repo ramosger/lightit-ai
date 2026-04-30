@@ -85,6 +85,7 @@ class MainMenuScreen
                 }
                 $this->resetUpdateCheck();
             } else {
+                passthru('clear');
                 match ($choice) {
                     'uninstall' => $this->uninstall->render($command),
                     'update' => $this->update->render($command),
@@ -151,9 +152,9 @@ class MainMenuScreen
         if ($this->updateSummary['hasUpdates']) {
             $count = $this->updateSummary['count'];
 
-            return "Update tools  ★  ({$count} available)";
+            return "Update tools  \e[38;2;251;191;36m★ {$count} available\e[0m";
         }
 
-        return 'Update tools  ✓ up to date';
+        return "Update tools  \e[38;2;134;239;172m✓ Up to date\e[0m";
     }
 }
