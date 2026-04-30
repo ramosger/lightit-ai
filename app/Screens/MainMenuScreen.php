@@ -2,7 +2,6 @@
 
 namespace App\Screens;
 
-use App\Installers\Contracts\InstallerInterface;
 use App\Logo;
 use App\Prompts\QuitableSelectPrompt;
 use App\Theme;
@@ -14,14 +13,12 @@ class MainMenuScreen
     private ?string $updateTmpFile = null;
     private bool $updateCheckLaunched = false;
 
-    /** @param array<string, InstallerInterface> $installers */
     public function __construct(
         private readonly InstallScreen $install,
         private readonly UninstallScreen $uninstall,
         private readonly UpdateScreen $update,
         private readonly EngramScreen $engram,
         private readonly PrerequisitesScreen $prerequisites,
-        private readonly array $installers,
     ) {}
 
     public function render(Command $command): void
@@ -146,7 +143,7 @@ class MainMenuScreen
     private function buildUpdateLabel(): string
     {
         if ($this->updateSummary === null) {
-            return 'Update tools';
+            return "Update tools  (\e[36m↻ Checking...\e[0m)";
         }
 
         if ($this->updateSummary['hasUpdates']) {

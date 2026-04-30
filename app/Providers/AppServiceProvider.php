@@ -82,7 +82,6 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(UpdateScreen::class),
                 $app->make(EngramScreen::class),
                 $app->make(PrerequisitesScreen::class),
-                $app->make('installers'),
             );
         });
     }
