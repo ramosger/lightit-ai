@@ -17,7 +17,8 @@ class ParallelUpdateChecker
     public function run(array $keys): array
     {
         $php = PHP_BINARY;
-        $app = base_path('application');
+        $phar = \Phar::running(false);
+        $app = $phar !== '' ? $phar : base_path('application');
         $tmpFiles = [];
 
         foreach ($keys as $key) {
