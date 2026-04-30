@@ -14,11 +14,11 @@ class MainMenuScreen
         private readonly UninstallScreen $uninstall,
         private readonly UpdateScreen $update,
         private readonly EngramScreen $engram,
+        private readonly PrerequisitesScreen $prerequisites,
     ) {}
 
     public function render(Command $command): void
     {
-        // Enter alternate screen buffer — keeps terminal history clean
         system('tput smcup');
 
         while (true) {
@@ -47,12 +47,20 @@ class MainMenuScreen
                 return;
             }
 
-            match ($choice) {
-                'install' => $this->install->render($command),
-                'uninstall' => $this->uninstall->render($command),
-                'update' => $this->update->render($command),
-                'engram' => $this->engram->render($command),
-            };
+            if ($choice === 'install') {
+                passthru('clear');
+                $confirmed = $this->prerequisites->render($command);
+                if ($confirmed) {
+                    passthru('clear');
+                    $this->install->render($command);
+                }
+            } else {
+                match ($choice) {
+                    'uninstall' => $this->uninstall->render($command),
+                    'update' => $this->update->render($command),
+                    'engram' => $this->engram->render($command),
+                };
+            }
 
         }
     }

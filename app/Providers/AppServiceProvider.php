@@ -10,6 +10,7 @@ use App\Installers\RtkInstaller;
 use App\Screens\EngramScreen;
 use App\Screens\InstallScreen;
 use App\Screens\MainMenuScreen;
+use App\Screens\PrerequisitesScreen;
 use App\Screens\UninstallScreen;
 use App\Screens\UpdateScreen;
 use App\Support\BrewRunner;
@@ -80,6 +81,7 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(UninstallScreen::class),
                 $app->make(UpdateScreen::class),
                 $app->make(EngramScreen::class),
+                $app->make(PrerequisitesScreen::class),
             );
         });
     }
