@@ -19,6 +19,7 @@ class MainMenuScreen
         private readonly UpdateScreen $update,
         private readonly EngramScreen $engram,
         private readonly PrerequisitesScreen $prerequisites,
+        private readonly ProvidersScreen $providers,
     ) {}
 
     public function render(Command $command): void
@@ -87,6 +88,7 @@ class MainMenuScreen
                     'uninstall' => $this->uninstall->render($command),
                     'update' => $this->update->render($command),
                     'engram' => $this->engram->render($command),
+                    'providers' => $this->providers->render($command),
                 };
 
                 if ($choice === 'update') {
@@ -101,8 +103,9 @@ class MainMenuScreen
         return [
             'install' => 'Install Stack',
             'update' => $this->buildUpdateLabel(),
-            'uninstall' => 'Uninstall tools',
+            'providers' => 'Providers',
             'engram' => 'Engram memory',
+            'uninstall' => 'Uninstall tools',
             'exit' => 'Exit',
         ];
     }

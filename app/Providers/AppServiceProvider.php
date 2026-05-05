@@ -11,6 +11,9 @@ use App\Screens\EngramScreen;
 use App\Screens\InstallScreen;
 use App\Screens\MainMenuScreen;
 use App\Screens\PrerequisitesScreen;
+use App\Screens\Providers\ClaudeProviderScreen;
+use App\Screens\Providers\OpenCodeProviderScreen;
+use App\Screens\ProvidersScreen;
 use App\Screens\UninstallScreen;
 use App\Screens\UpdateScreen;
 use App\Support\BrewRunner;
@@ -75,6 +78,15 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(EngramScreen::class);
 
+        $this->app->singleton(ClaudeProviderScreen::class);
+        $this->app->singleton(OpenCodeProviderScreen::class);
+        $this->app->singleton(ProvidersScreen::class, function ($app) {
+            return new ProvidersScreen(
+                $app->make(ClaudeProviderScreen::class),
+                $app->make(OpenCodeProviderScreen::class),
+            );
+        });
+
         $this->app->singleton(MainMenuScreen::class, function ($app) {
             return new MainMenuScreen(
                 $app->make(InstallScreen::class),
@@ -82,6 +94,7 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(UpdateScreen::class),
                 $app->make(EngramScreen::class),
                 $app->make(PrerequisitesScreen::class),
+                $app->make(ProvidersScreen::class),
             );
         });
     }
