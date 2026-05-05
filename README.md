@@ -32,7 +32,22 @@
 
 ---
 
-## Quick Start
+## Installation via Homebrew (recommended)
+
+```bash
+brew tap ramosger/tap
+brew install lightit-ai
+```
+
+To update:
+
+```bash
+brew upgrade lightit-ai
+```
+
+---
+
+## Quick Start (binary)
 
 Download the latest binary from the [releases page](https://github.com/ramosger/lightit-ai/releases/latest), then:
 
