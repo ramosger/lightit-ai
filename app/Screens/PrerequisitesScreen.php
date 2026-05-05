@@ -56,9 +56,11 @@ class PrerequisitesScreen
             }
         }
 
-        if (! empty($missing)) {
+        $canContinue = empty($missing);
+
+        if (! $canContinue) {
             $command->newLine();
-            $command->line("  <fg=yellow;options=bold>Install missing before continuing:</>");
+            $command->line("  <fg=yellow;options=bold>Install the following before continuing:</>");
             $command->newLine();
             foreach ($missing as $binary => $hint) {
                 $command->line("  <fg=$c>{$binary}</>  →  <fg=white>{$hint}</>");
@@ -67,9 +69,13 @@ class PrerequisitesScreen
 
         $command->newLine();
 
+        $options = $canContinue
+            ? ['continue' => 'Continue', 'back' => 'Back']
+            : ['back' => 'Back'];
+
         $prompt = new BackableSelectPrompt(
-            label: '',
-            options: ['continue' => 'Continue', 'back' => 'Back'],
+            label: $canContinue ? '' : '  ✗ Missing required dependencies',
+            options: $options,
             hint: Theme::NAV_HINT_SUB,
         );
 

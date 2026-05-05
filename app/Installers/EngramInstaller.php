@@ -26,9 +26,13 @@ class EngramInstaller implements InstallerInterface
     {
         $this->brew->tap('gentleman-programming/tap');
 
-        $result = $this->brew->exec('brew install engram');
+        $result = $this->brew->exec('brew install gentleman-programming/tap/engram');
         if ($result['exit'] !== 0) {
-            $this->lastError = $result['output'];
+            if (str_contains($result['output'], 'xcode-select')) {
+                $this->lastError = "Xcode Command Line Tools are required.\n  Run: xcode-select --install";
+            } else {
+                $this->lastError = $result['output'];
+            }
 
             return false;
         }

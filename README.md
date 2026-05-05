@@ -32,23 +32,41 @@
 
 ---
 
-## Quick Start
+## Installation via Homebrew (recommended)
 
 ```bash
-lightit-ai
+brew tap ramosger/tap
+brew install lightit-ai
 ```
 
-The TUI guides you through installing, updating, or removing any combination of tools.
+To update:
+
+```bash
+brew upgrade lightit-ai
+```
 
 ---
 
-## Installation
+## Quick Start (binary)
+
+Download the latest binary from the [releases page](https://github.com/ramosger/lightit-ai/releases/latest), then:
+
+```bash
+chmod +x lightit-ai
+./lightit-ai
+```
+
+Requirements: PHP 8.4+
+
+---
+
+## Installation (from source)
 
 Requirements: PHP >= 8.4 & Composer
 
 ```bash
 # Clone and install dependencies
-git clone https://github.com/lightit-io/lightit-ai
+git clone https://github.com/ramosger/lightit-ai
 cd lightit-ai
 composer install
 
@@ -64,9 +82,10 @@ composer build          # outputs builds/lightit-ai
 ## TUI Screens
 
 - **Install** — select and install any tools not yet present
-- **Uninstall** — remove installed tools cleanly
 - **Update** — check for and apply updates to installed tools
-- **Engram** — manage Engram memory directly from the TUI
+- **Providers** — provider-specific extras (Claude statusline via ccstatusline, OpenCode coming soon)
+- **Engram** — launch Engram TUI and view memory statistics
+- **Uninstall** — remove installed tools cleanly
 
 ---
 
