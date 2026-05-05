@@ -95,6 +95,7 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(EngramScreen::class),
                 $app->make(PrerequisitesScreen::class),
                 $app->make(ProvidersScreen::class),
+                $app->make(StateManager::class),
             );
         });
     }

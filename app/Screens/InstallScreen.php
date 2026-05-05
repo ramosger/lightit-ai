@@ -38,14 +38,6 @@ class InstallScreen
             }
         }
 
-        if ($alreadyInstalled) {
-            $command->line("  <fg=$c;options=bold>Already installed</>");
-            foreach ($alreadyInstalled as $name) {
-                $command->line("  <fg=green>✓</> <fg=$c>{$name}</>");
-            }
-            $command->newLine();
-        }
-
         if (empty($choices)) {
             $command->line("  <fg=$c;options=bold>All tools are already installed</>");
             $command->newLine();
@@ -54,20 +46,29 @@ class InstallScreen
             return;
         }
 
-        $prompt = new BackableMultiSelectPrompt(
-            label: 'Which Stack tools would you like to install?',
-            options: $choices,
-            default: array_keys($choices),
-            hint: Theme::NAV_HINT_MULTI,
-        );
-
-        $selected = $prompt->prompt();
-
-        if ($prompt->cancelled || empty($selected)) {
+        do {
             passthru('clear');
 
-            return;
-        }
+            if ($alreadyInstalled) {
+                $command->line("  <fg=$c;options=bold>Already installed</>");
+                foreach ($alreadyInstalled as $name) {
+                    $command->line("  <fg=green>✓</> <fg=$c>{$name}</>");
+                }
+                $command->newLine();
+            }
+
+            $prompt = new BackableMultiSelectPrompt(
+                label: 'Which Stack tools would you like to install?',
+                options: $choices,
+                hint: Theme::NAV_HINT_MULTI,
+            );
+
+            $selected = $prompt->prompt();
+
+            if ($prompt->cancelled) {
+                return;
+            }
+        } while (empty($selected));
 
         $engramInstaller = $this->installers['engram'] ?? null;
         $engramAlreadyInstalled = $engramInstaller
