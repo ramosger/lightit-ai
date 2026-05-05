@@ -37,17 +37,20 @@ class UninstallScreen
             $choices[$key] = "{$name} (v{$version})";
         }
 
-        $prompt = new BackableMultiSelectPrompt(
-            label: 'Which tools would you like to uninstall?',
-            options: $choices,
-            hint: Theme::NAV_HINT_MULTI,
-        );
+        do {
+            passthru('clear');
+            $prompt = new BackableMultiSelectPrompt(
+                label: 'Which tools would you like to uninstall?',
+                options: $choices,
+                hint: Theme::NAV_HINT_MULTI,
+            );
 
-        $selected = $prompt->prompt();
+            $selected = $prompt->prompt();
 
-        if ($prompt->cancelled || empty($selected)) {
-            return;
-        }
+            if ($prompt->cancelled) {
+                return;
+            }
+        } while (empty($selected));
 
         $confirmed = confirm(
             label: 'Are you sure you want to uninstall the selected tools?',
