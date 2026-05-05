@@ -104,7 +104,7 @@ class MainMenuScreen
             'install' => 'Install Stack',
             'update' => $this->buildUpdateLabel(),
             'providers' => 'Providers',
-            'engram' => 'Engram memory',
+            'engram' => 'Engram',
             'uninstall' => 'Uninstall tools',
             'exit' => 'Exit',
         ];

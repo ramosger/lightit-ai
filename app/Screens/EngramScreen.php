@@ -6,59 +6,58 @@ use App\Prompts\BackableSelectPrompt;
 use App\Theme;
 use LaravelZero\Framework\Commands\Command;
 
-use function Laravel\Prompts\text;
-
 class EngramScreen
 {
     public function render(Command $command): void
     {
-        $prompt = new BackableSelectPrompt(
-            label: 'Engram — what would you like to do?',
-            options: [
-                'tui' => 'Launch Engram TUI (interactive memory browser)',
-                'search' => 'Search memories',
-                'stats' => 'Memory statistics',
-            ],
-            hint: Theme::NAV_HINT_SUB,
-        );
+        while (true) {
+            passthru('clear');
+            $prompt = new BackableSelectPrompt(
+                label: 'What would you like to do?',
+                options: [
+                    'tui' => 'Launch Engram TUI',
+                    'stats' => 'Memory statistics',
+                ],
+                hint: Theme::NAV_HINT_SUB,
+            );
 
-        $action = $prompt->prompt();
+            $action = $prompt->prompt();
 
-        if ($prompt->cancelled) {
-            return;
+            if ($prompt->cancelled) {
+                return;
+            }
+
+            match ($action) {
+                'tui' => $this->launchTui(),
+                'stats' => $this->stats($command),
+            };
+        }
+    }
+
+    private function launchTui(): void
+    {
+        $stty = trim((string) shell_exec('stty -g 2>/dev/null'));
+        system('stty sane');
+        system('tput rmcup');
+        system('tput clear');
+
+        $tty = ['file', '/dev/tty', 'r+'];
+        $proc = proc_open('engram tui', [$tty, $tty, $tty], $pipes);
+        if (\is_resource($proc)) {
+            proc_close($proc);
         }
 
-        match ($action) {
-            'tui' => $this->launchTui($command),
-            'search' => $this->search($command),
-            'stats' => $this->stats($command),
-        };
-
-    }
-
-    private function launchTui(Command $command): void
-    {
-        $c = Theme::PRIMARY;
-        $command->newLine();
-        $command->line("  <fg=$c>Launching Engram TUI — press q or Ctrl+C to return...</>");
-        $command->newLine();
-        passthru('engram tui');
-    }
-
-    private function search(Command $command): void
-    {
-        $query = text(
-            label: 'Search query',
-            required: true,
-        );
-
-        $command->newLine();
-        passthru('engram search '.escapeshellarg($query));
+        system('tput smcup');
+        if ($stty !== '') {
+            system('stty '.escapeshellarg($stty));
+        }
     }
 
     private function stats(Command $command): void
     {
         $command->newLine();
         passthru('engram stats');
+        $command->newLine();
+        $command->ask('Press enter to go back');
     }
 }
