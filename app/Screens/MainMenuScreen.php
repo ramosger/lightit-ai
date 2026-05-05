@@ -4,6 +4,7 @@ namespace App\Screens;
 
 use App\Logo;
 use App\Prompts\QuitableSelectPrompt;
+use App\Support\StateManager;
 use App\Theme;
 use LaravelZero\Framework\Commands\Command;
 
@@ -20,6 +21,7 @@ class MainMenuScreen
         private readonly EngramScreen $engram,
         private readonly PrerequisitesScreen $prerequisites,
         private readonly ProvidersScreen $providers,
+        private readonly StateManager $state,
     ) {}
 
     public function render(Command $command): void
@@ -35,6 +37,7 @@ class MainMenuScreen
             $prompt = new QuitableSelectPrompt(
                 label: '',
                 options: $this->menuOptions(),
+                scroll: 10,
                 hint: Theme::NAV_HINT,
             );
 
@@ -100,14 +103,20 @@ class MainMenuScreen
 
     private function menuOptions(): array
     {
-        return [
+        $options = [
             'install' => 'Install Stack',
             'update' => $this->buildUpdateLabel(),
             'providers' => 'Providers',
-            'engram' => 'Engram',
-            'uninstall' => 'Uninstall tools',
-            'exit' => 'Exit',
         ];
+
+        if ($this->state->isInstalled('engram') || ! empty(shell_exec('which engram 2>/dev/null'))) {
+            $options['engram'] = 'Engram';
+        }
+
+        $options['uninstall'] = 'Uninstall tools';
+        $options['exit'] = 'Exit';
+
+        return $options;
     }
 
     private function resetUpdateCheck(): void

@@ -22,19 +22,22 @@ class UninstallScreen
     {
         $c = Theme::PRIMARY;
         $toolConfig = config('tools');
-        $installed = $this->state->getInstalled();
+        $tracked = $this->state->getInstalled();
 
-        if (empty($installed)) {
+        $choices = [];
+        foreach ($this->installers as $key => $installer) {
+            if (! isset($tracked[$key]) && ! $installer->isInstalled()) {
+                continue;
+            }
+            $name = $toolConfig[$key]['name'] ?? $key;
+            $version = $tracked[$key]['version'] ?? $installer->checkUpdate()['current'] ?? '?';
+            $choices[$key] = "{$name} (v{$version})";
+        }
+
+        if (empty($choices)) {
             $command->line("  <fg=$c>No tools are currently installed.</>");
 
             return;
-        }
-
-        $choices = [];
-        foreach (array_keys($installed) as $key) {
-            $name = $toolConfig[$key]['name'] ?? $key;
-            $version = $installed[$key]['version'] ?? '?';
-            $choices[$key] = "{$name} (v{$version})";
         }
 
         do {
